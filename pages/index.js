@@ -1,8 +1,59 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+  const [selCnt, setSelCnt] = useState(0);
+  const [maxSel, setMaxSel] = useState(10);
+  const [rowCnt, setRowCnt] = useState(20);
+  const [cellProps, setCellProps] = useState([]);
+  const [columnCnt, setColumnCnt] = useState(30);
+
+  useEffect(() => {
+    for (let i = 0; i < rowCnt * columnCnt; i++) {
+      cellProps[i] = '';
+    }
+
+    for (let i = 0; i < 50; i++) {
+      cellProps[parseInt(Math.random() * 600)] = 'disable';
+    }
+    cellClickUp()
+    console.log('here')
+  }, []);
+
+  const mouseOver = (e, selInd) => { 
+    if (cellProps[selInd] != "disable" && e.buttons === 1 && selCnt < maxSel) { 
+      const selLen = cellProps[selInd].length > 0;
+      cellProps[selInd] = selLen ? '' : 'selected';
+      setCellProps(cellProps); 
+      
+      setSelCnt(selLen ? selCnt - 1 : selCnt + 1);
+    }
+  }
+
+  const cellClickUp = () => {
+    setCellProps(cellProps);
+  }
+
+  const cellClick = (selInd) => {
+    if (cellProps[selInd] != "disable") {
+      if (cellProps[selInd] == '') {
+        if (selCnt < maxSel) {
+          setSelCnt(selCnt + 1);
+          cellProps[selInd] = 'selected';
+          setCellProps(cellProps);
+        } else {
+          alert('over max sel');
+        }
+      } else {
+        setSelCnt(selCnt - 1);
+        cellProps[selInd] = '';
+        setCellProps(cellProps);
+      }
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,60 +63,27 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
+        <b>You selected {selCnt} fractions</b>
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          <Image src="/img.jpg" alt="hig res img" width={800} height={500} />
+          <table className={styles.imgtbl}>
+            <tbody>
+              {[...Array(rowCnt)].map((x, i) => {
+                return (
+                  <tr key={i}>
+                    {[...Array(columnCnt)].map((x1, i1) =>
+                      <td key={i1} onMouseDown={() => cellClick(i * columnCnt + i1)}
+                        onMouseUp={() => cellClickUp()}
+                        onMouseOver={e => mouseOver(e, i * columnCnt + i1)}
+                        className={styles[cellProps[i * columnCnt + i1]]} />
+                    )}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }

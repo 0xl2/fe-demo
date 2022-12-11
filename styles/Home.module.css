@@ -127,3 +127,22 @@
     filter: invert(1);
   }
 }
+
+.imgtbl {
+  position: absolute;
+  width: 800px;
+  height: 500px;
+  border-collapse: collapse;
+}
+
+.imgtbl td {
+  border: 0.1px solid #dee2e6;
+}
+
+td.selected {
+  background-color: red;
+}
+
+td.disable {
+  background-color: black;
+}
